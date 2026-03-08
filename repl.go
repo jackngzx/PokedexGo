@@ -10,7 +10,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, ...string) error
 }
 
 var commands = map[string]cliCommand{
@@ -34,24 +34,45 @@ var commands = map[string]cliCommand{
 		description: "List the previous 20 map names",
 		callback:    commandMapb,
 	},
+	"explore": {
+		name:        "explore",
+		description: "Explore the Pokemon in the location area",
+		callback:    commandExplore,
+	},
+	"catch": {
+		name:        "catch",
+		description: "Catch the Pokemon",
+		callback:    commandCatch,
+	},
+	"inspect": {
+		name:        "inspect",
+		description: "Inspect a caught Pokemon",
+		callback:    commandInspect,
+	},
+	"pokedex": {
+		name:        "pokedex",
+		description: "List all caught Pokemon",
+		callback:    commandPokedex,
+	},
 }
 
 func cleanInput(text string) []string {
 	lower := strings.ToLower(text)
 	words := strings.Fields(lower)
-
 	return words
 }
+
 func repl(c *config) {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Pokedex > ")
 		scanner.Scan()
 		text := scanner.Text()
-		words := strings.Fields(strings.ToLower(text))
+		words := cleanInput(text)
 		word := words[0]
+		args := words[1:]
 		if cmd, exists := commands[word]; exists {
-			err := cmd.callback(c)
+			err := cmd.callback(c, args...)
 			if err != nil {
 				fmt.Printf("Error executing command: %v\n", err)
 			}

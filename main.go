@@ -1,7 +1,16 @@
 package main
 
-func main() {
+import (
+	"time"
 
-	c := &config{}
+	"github.com/jackngzx/PokedexGo/internal/pokeapi"
+)
+
+func main() {
+	pokeClient := pokeapi.NewClient(5*time.Second, 5*time.Minute)
+	c := &config{
+		pokeapiClient: pokeClient,
+		pokedex:       make(map[string]pokeapi.PokemonData),
+	}
 	repl(c)
 }
